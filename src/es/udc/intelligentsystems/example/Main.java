@@ -1,5 +1,6 @@
 package es.udc.intelligentsystems.example;
 
+import es.udc.intelligentsystems.GraphSearch;
 import es.udc.intelligentsystems.SearchStrategy;
 import es.udc.intelligentsystems.SearchProblem;
 
@@ -10,7 +11,7 @@ public class Main {
                                                                                                     VacuumCleanerProblem.VacuumCleanerState.DirtPosition.BOTH);
         SearchProblem aspiradora = new VacuumCleanerProblem(initialState);
 
-        SearchStrategy buscador = new Strategy4();
+        SearchStrategy buscador = new GraphSearch();
         System.out.println(buscador.solve(aspiradora));
     }
 }
