@@ -37,4 +37,9 @@ public class Node {
     public int hashCode() {
         return Objects.hash(state);
     }
+
+    @Override
+    public String toString() {
+        return state.toString();
+    }
 }

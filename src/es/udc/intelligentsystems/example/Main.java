@@ -1,6 +1,7 @@
 package es.udc.intelligentsystems.example;
 
 import es.udc.intelligentsystems.GraphSearch;
+import es.udc.intelligentsystems.Node;
 import es.udc.intelligentsystems.SearchStrategy;
 import es.udc.intelligentsystems.SearchProblem;
 
@@ -12,6 +13,7 @@ public class Main {
         SearchProblem aspiradora = new VacuumCleanerProblem(initialState);
 
         SearchStrategy buscador = new GraphSearch();
-        System.out.println(buscador.solve(aspiradora));
+        Node[] sol = buscador.solve(aspiradora);
+        System.out.println(buscador.buildSol(sol));
     }
 }

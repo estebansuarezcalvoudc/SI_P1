@@ -5,7 +5,16 @@ import java.util.*;
 public class GraphSearch implements SearchStrategy {
     @Override
     public String buildSol(Node[] nodes) {
-        return null;
+        StringBuilder sb = new StringBuilder();
+        int i = 1;
+
+        sb.append("Explored: \n");
+
+        for (Node node : nodes) {
+            sb.append(i++).append(" - ").append(node).append("\n");
+        }
+
+        return sb.toString();
     }
 
     @Override
