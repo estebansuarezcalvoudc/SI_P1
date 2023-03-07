@@ -3,21 +3,24 @@ package es.udc.intelligentsystems.example;
 import es.udc.intelligentsystems.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Queue;
 
 public class Strategy4 implements SearchStrategy {
 
     public Strategy4() {
     }
 
-    public String buildSol(Node[] nodes) {
-        StringBuilder sb = new StringBuilder();
+    private Node[] buildSol(Node n) {
+        List<Node> solution = new ArrayList<>();
 
-        for (Node n : nodes) {
-            sb.append(n).append("\n");
-            System.out.println(n + "\n");
+        while (n != null) {
+            solution.add(n);
+            n = n.getParent();
         }
 
-        return sb.toString();
+        return solution.toArray(new Node[0]);
     }
 
     @Override
@@ -56,7 +59,7 @@ public class Strategy4 implements SearchStrategy {
         }
         System.out.println((i++) + " - END - " + currentState);
 
-        return explored.toArray(new Node[0]);
+        return buildSol(currentNode);
     }
 }
 

@@ -3,18 +3,15 @@ package es.udc.intelligentsystems;
 import java.util.*;
 
 public class GraphSearch implements SearchStrategy {
-    @Override
-    public String buildSol(Node[] nodes) {
-        StringBuilder sb = new StringBuilder();
-        int i = 1;
+    private Node[] buildSol(Node n) {
+        List<Node> solution = new ArrayList<>();
 
-        sb.append("Explored: \n");
-
-        for (Node node : nodes) {
-            sb.append(i++).append(" - ").append(node).append("\n");
+        while (n != null) {
+            solution.add(n);
+            n = n.getParent();
         }
 
-        return sb.toString();
+        return solution.toArray(new Node[0]);
     }
 
     @Override
@@ -55,6 +52,6 @@ public class GraphSearch implements SearchStrategy {
 
         System.out.println((i++) + " - END - " + currentNode.getState());
 
-        return explored.toArray(new Node[0]);
+        return buildSol(currentNode);
     }
 }

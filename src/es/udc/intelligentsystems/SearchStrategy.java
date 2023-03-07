@@ -1,7 +1,6 @@
 package es.udc.intelligentsystems;
 
 public interface SearchStrategy {
-    public String buildSol(Node[] nodes);
     /**
      * Solves a search problem, obtaining a goal state or throwing an exception if none is found
      * @param p Problem to solve
