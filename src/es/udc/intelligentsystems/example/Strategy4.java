@@ -12,17 +12,6 @@ public class Strategy4 implements SearchStrategy {
     public Strategy4() {
     }
 
-    private Node[] buildSol(Node n) {
-        List<Node> solution = new ArrayList<>();
-
-        while (n != null) {
-            solution.add(n);
-            n = n.getParent();
-        }
-
-        return solution.toArray(new Node[0]);
-    }
-
     @Override
     public Node[] solve(SearchProblem p) throws Exception {
         ArrayList<Node> explored = new ArrayList<>();
@@ -59,7 +48,7 @@ public class Strategy4 implements SearchStrategy {
         }
         System.out.println((i++) + " - END - " + currentState);
 
-        return buildSol(currentNode);
+        return SearchStrategy.buildSol(currentNode);
     }
 }
 

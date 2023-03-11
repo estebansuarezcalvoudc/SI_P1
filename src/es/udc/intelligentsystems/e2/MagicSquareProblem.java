@@ -6,76 +6,81 @@ import es.udc.intelligentsystems.State;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 import static java.lang.Math.pow;
 
 public class MagicSquareProblem extends SearchProblem {
-    private final int N;
-    private int[][] magicSquare;
-    final List<Position> positions;
 
     public MagicSquareProblem(MagicSquareState initialState) {
         super(initialState);
-        magicSquare = initialState.magicSquare;
-        N = magicSquare.length;
-        positions = new ArrayList<>();
-        Position pos = new Position();
-
-        for (pos.i = 0; pos.i < N; ++pos.i)
-            for (pos.j = 0; pos.j < N; ++pos.j)
-                if (magicSquare[pos.i][pos.j] != 0)
-                    positions.add(pos);
-    }
-
-    private boolean checkSum(int sum) {
-        return (sum != (pow(N, 3) + N) / 2);
     }
 
     @Override
     public boolean isGoal(State st) {
-        MagicSquareState state = (MagicSquareState) st;
-        int[] sum = new int[N * 2 + 2];
-        int i, j;
+        MagicSquareState esC = (MagicSquareState) st;
+        int sumd1 = 0,sumd2=0;
 
-        for (i = 0; i < N; ++i) {
-            for (j = 0; j < N; ++j)
-                sum[i] += state.magicSquare[i][j];
-
-            if (checkSum(sum[i])) return false;
+        for (int i = 0; i < esC.N; i++) {
+            sumd1 += esC.magicSquare[i][i];
+            sumd2 += esC.magicSquare[i][esC.N-1-i];
         }
 
-        for (i = 0; i < N; ++i){
-            for (j = 0; j < N; ++j)
-                sum[j] += state.magicSquare[i][j];
-            if (checkSum(sum[i])) return false;
+        //compara que las diagonales sumen lo mismo
+        if (sumd1 != sumd2)
+            return false;
+
+        for (int i = 0; i < esC.N; i++) {
+            int rowSum = 0, colSum = 0;
+
+            for (int j = 0; j < esC.N; j++) {
+                rowSum += esC.magicSquare[i][j];
+                colSum += esC.magicSquare[j][i];
+            }
+            //compara que las filas y columnas sumen lo mismo
+            if (rowSum != colSum || colSum != sumd1)
+                return false;
         }
-
-        i = 0;
-        while (i < N) {
-            sum[0] += state.magicSquare[i][i];
-            i++;
-        }
-
-        if (!checkSum(sum[0])) return false;
-
-        i = 0;
-        j = N - 1;
-        while (i < N && j >= 0) {
-            sum[0] += state.magicSquare[i][j];
-            i++;
-            j--;
-        }
-
-        return checkSum(sum[0]);
+        return true;
     }
 
     @Override
     public Action[] actions(State st) {
+        MagicSquareState s = (MagicSquareState) st;
+        List<Action> actions = new ArrayList<>();
+        List<Integer> nums = new LinkedList<>();
+        List<Integer> auxList = new ArrayList<>();
+        Action action;
+        int i, j;
 
+        for (i = 1; i <= s.N * s.N; ++i) nums.add(i);
 
-        return new Action[0];
+        for (i = 0; i < s.N; ++i) {
+            for (j = 0; j < s.N; ++j) {
+                if (s.magicSquare[i][j] == 0) continue;
+
+                auxList.add(s.magicSquare[i][j]);
+            }
+        }
+
+        for (Integer num : auxList) {
+            nums.remove(num);
+        }
+
+        for (i = 0; i < s.N; ++i) {
+            for (j = 0; j < s.N; ++j) {
+                if (s.magicSquare[i][j] != 0) continue;
+
+                for (Integer num : nums) {
+                    action = new MagicSquareAction(i, j, num);
+                    if (action.isApplicable(s))
+                        actions.add(action);
+                }
+            }
+        }
+
+        return actions.toArray(new Action[0]);
     }
 
     public static class MagicSquareState extends State {
@@ -102,10 +107,6 @@ public class MagicSquareProblem extends SearchProblem {
             magicSquare = matrix;
         }
 
-        public int[][] getMagicSquare() {
-            return magicSquare;
-        }
-
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
@@ -128,7 +129,7 @@ public class MagicSquareProblem extends SearchProblem {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             MagicSquareState that = (MagicSquareState) o;
-            return Arrays.deepEquals(magicSquare, that.magicSquare);
+            return that.N == N && Arrays.deepEquals(magicSquare, that.magicSquare);
         }
 
         @Override
@@ -137,10 +138,10 @@ public class MagicSquareProblem extends SearchProblem {
         }
     }
 
-    public class MagicSquareAction extends Action {
-        private int x;
-        private int y;
-        private int num;
+    public static class MagicSquareAction extends Action {
+        private final int x;
+        private final int y;
+        private final int num;
 
         public MagicSquareAction(int x, int y, int num) {
             this.x = x;
@@ -154,36 +155,36 @@ public class MagicSquareProblem extends SearchProblem {
         }
 
         @Override
-        public boolean isApplicable(State es) {
-            MagicSquareState esC = (MagicSquareState) applyTo(es);
+        public boolean isApplicable(State st) {
+            MagicSquareState state = (MagicSquareState) applyTo(st);
 
-            if (((MagicSquareState)es).magicSquare[x][y] != 0) return false;
+            if (((MagicSquareState) st).magicSquare[x][y] != 0) return false;
 
-            int num = esC.N;
+            int num = state.N;
             int maxN = (num*((num*num)+1))/2;
 
             int sumd1 = 0,sumd2=0;
             int rowSum = 0, colSum = 0;
-            for (int i = 0; i < esC.N; i++) {
-                if (maxN < (sumd1 += esC.magicSquare[i][i])) return false;
-                if (maxN < (sumd2 += esC.magicSquare[i][esC.N-1-i])) return false;
-                if (maxN < (rowSum += esC.magicSquare[x][i])) return false;
-                if (maxN < (colSum += esC.magicSquare[i][y])) return false;
+            for (int i = 0; i < state.N; i++) {
+                if (maxN < (sumd1 += state.magicSquare[i][i])) return false;
+                if (maxN < (sumd2 += state.magicSquare[i][state.N-1-i])) return false;
+                if (maxN < (rowSum += state.magicSquare[x][i])) return false;
+                if (maxN < (colSum += state.magicSquare[i][y])) return false;
             }
             return true;
         }
 
         @Override
-        public State applyTo(State es) {
-            MagicSquareState esC = ((MagicSquareState) es);
-            int[][] matriz = new int[esC.N][esC.N];
+        public State applyTo(State st) {
+            MagicSquareState state = ((MagicSquareState) st);
+            int[][] matrix = new int[state.N][state.N];
 
-            for(int i = 0 ; i < esC.N ; i++)
-                System.arraycopy(esC.magicSquare[i], 0, matriz[i], 0, esC.N);
+            for(int i = 0 ; i < state.N ; i++)
+                System.arraycopy(state.magicSquare[i], 0, matrix[i], 0, state.N);
 
-            matriz[x][y] = num;
+            matrix[x][y] = num;
 
-            return new MagicSquareState(matriz);
+            return new MagicSquareState(matrix);
         }
     }
 }

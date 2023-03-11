@@ -1,40 +1,42 @@
-package es.udc.intelligentsystems;
+package es.udc.intelligentsystems.e2;
 
-import java.util.*;
+import es.udc.intelligentsystems.*;
 
-public class GraphSearch implements SearchStrategy {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+
+public class DepthFirstSearch implements SearchStrategy {
     @Override
     public Node[] solve(SearchProblem p) throws Exception {
-        Queue<Node> frontier = new LinkedList<>();
+        Stack<Node> frontier = new Stack<>();
+        List<Node> explored = new ArrayList<>();
+        Action[] actions;
         Node currentNode = new Node(p.getInitialState(), null, null);
         int i = 1;
-
-        frontier.add(currentNode);
 
         System.out.println((i++) + " - Starting search at " + currentNode.getState());
 
         while (!p.isGoal(currentNode.getState())) {
-            if (frontier.isEmpty()) {
-                throw new Exception("No solution could be found");
-            }
-
-            currentNode = frontier.poll();
+            explored.add(currentNode);
 
             System.out.println((i++) + " - RESULT(" + currentNode.getState() + "," +
                     currentNode.getAction() + ")=" + currentNode.getState());
 
-            Action[] availableActions = p.actions(currentNode.getState());
+            actions = p.actions(currentNode.getState());
 
-            /* Añadir nodos disponibles a la frontera */
-            for (Action action : availableActions) {
+            for (Action action : actions) {
                 State nextState = p.result(currentNode.getState(), action);
 
                 Node auxNode = new Node(nextState, currentNode, action);
 
-                if (!frontier.contains(auxNode)) {
-                    frontier.add(auxNode);
-                }
+                if (!frontier.contains(auxNode) && !explored.contains(auxNode))
+                    frontier.push(auxNode);
             }
+
+            if (frontier.isEmpty()) throw new Exception("No solution could be found\n");
+
+            currentNode = frontier.pop();
         }
 
         System.out.println((i++) + " - END - " + currentNode.getState());
