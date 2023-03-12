@@ -1,6 +1,7 @@
 package es.udc.intelligentsystems.e2;
 
 import es.udc.intelligentsystems.Action;
+import es.udc.intelligentsystems.Heuristic;
 import es.udc.intelligentsystems.SearchProblem;
 import es.udc.intelligentsystems.State;
 
@@ -185,6 +186,74 @@ public class MagicSquareProblem extends SearchProblem {
             matrix[x][y] = num;
 
             return new MagicSquareState(matrix);
+        }
+    }
+
+    public static class MagicSquareHeuristic extends Heuristic {
+
+        private int checkSum(int sum, int n) {
+            return sum == (pow(n, 3) + n) / 2 ? -1 : 0;
+        }
+
+        private int checkSum(int[] sum) {
+            int res = 0;
+
+            for (int x : sum) {
+                if (x == (pow(sum.length, 3) + sum.length) / 2) {
+                    res--;
+                }
+            }
+            return res;
+        }
+
+        @Override
+        public float evaluate(State e) {
+            /* Por cada fila, columna o diagonal, cuya suma de todos sus componentes sea (N*(N^2 + 1)) / 2, restamos
+             * 1 "punto"
+             */
+
+            MagicSquareProblem.MagicSquareState state = (MagicSquareProblem.MagicSquareState) e;
+            int [] sumRows = new int[state.N];
+            int [] sumCol = new int[state.N];
+            int sumPriDia, sumSecDia;
+            float res;
+            int i, j;
+
+            Arrays.fill(sumRows, 0);
+            for (i = 0; i < state.N; ++i) {
+                for (j = 0; j < state.N; ++j) {
+                    sumRows[i] += state.magicSquare[i][j];
+                }
+            }
+
+            Arrays.fill(sumCol, 0);
+            for (i = 0; i < state.N; ++i) {
+                for (j = 0; j < state.N; ++j) {
+                    sumCol[i] = state.magicSquare[j][i];
+                }
+            }
+
+            sumPriDia = 0;
+            for (i = 0; i < state.N; ++i) {
+                sumPriDia += state.magicSquare[i][i];
+            }
+
+            sumSecDia = 0;
+            for (i = 0; i < state.N; i++) {
+                for (j = 0; j < state.N; j++) {
+                    if (i + j == state.N - 1) {
+                        sumSecDia += state.magicSquare[i][j];
+                    }
+                }
+            }
+
+            res = 0;
+            res += checkSum(sumRows);
+            res += checkSum(sumCol);
+            res += checkSum(sumPriDia, state.N) * 2.3;
+            res += checkSum(sumSecDia, state.N) * 2.3;
+
+            return res;
         }
     }
 }
