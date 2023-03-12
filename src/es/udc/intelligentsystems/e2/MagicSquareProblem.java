@@ -14,6 +14,7 @@ import static java.lang.Math.pow;
 
 public class MagicSquareProblem extends SearchProblem {
 
+
     public MagicSquareProblem(MagicSquareState initialState) {
         super(initialState);
     }
@@ -85,6 +86,7 @@ public class MagicSquareProblem extends SearchProblem {
     }
 
     public static class MagicSquareState extends State {
+
         private final int[][] magicSquare;
         private final int N;
 
@@ -140,6 +142,7 @@ public class MagicSquareProblem extends SearchProblem {
     }
 
     public static class MagicSquareAction extends Action {
+
         private final int x;
         private final int y;
         private final int num;
@@ -212,7 +215,7 @@ public class MagicSquareProblem extends SearchProblem {
              * 1 "punto"
              */
 
-            MagicSquareProblem.MagicSquareState state = (MagicSquareProblem.MagicSquareState) e;
+            MagicSquareState state = (MagicSquareState) e;
             int [] sumRows = new int[state.N];
             int [] sumCol = new int[state.N];
             int sumPriDia, sumSecDia;
@@ -250,10 +253,10 @@ public class MagicSquareProblem extends SearchProblem {
             res = 0;
             res += checkSum(sumRows);
             res += checkSum(sumCol);
-            res += checkSum(sumPriDia, state.N) * 2.3;
-            res += checkSum(sumSecDia, state.N) * 2.3;
+            res += checkSum(sumPriDia, state.N);
+            res += checkSum(sumSecDia, state.N);
 
-            return res;
+            return res * 2;
         }
     }
 }
